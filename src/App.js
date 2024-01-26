@@ -1,29 +1,59 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
+import { AuthProvider } from "./context/AuthContext";
+
+import { onAuthStateChanged } from "firebase/auth";
+
+// hooks
+import { useEffect, useState } from "react";
+import { useAuthentication } from "./hooks/useAuthentication";
 
 //pages
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import About from "./pages/About/About";
+import CreatePost from "./pages/CreatePost/CreatePost";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 
 function App() {
+  const [user, setUser] = useState(undefined);
+  const { auth } = useAuthentication();
+
+  const loadingUser = user === undefined;
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+  }, [auth]);
+
+  console.log("user", user);
+
+  if (loadingUser) {
+    return <p>Carregando...</p>;
+  }
+
   return (
     <div className="App">
-      <BrowserRouter>
-        <Navbar />
-        <div className="container">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </div>
-        <Footer />
-      </BrowserRouter>
+      <AuthProvider value={{ user }}>
+        <BrowserRouter>
+          <Navbar />
+          <div className="container">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/posts/create" element={<CreatePost />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Routes>
+          </div>
+          <Footer />
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }
