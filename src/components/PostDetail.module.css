@@ -1,4 +1,4 @@
-.post_detaile {
+.post_detail {
   margin-bottom: 2em;
 }
 
@@ -16,6 +16,7 @@
 }
 
 .tags {
+  display: flex;
   margin-right: 0.5em;
 }
 
