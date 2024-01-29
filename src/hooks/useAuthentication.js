@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  signInWithEmailAndPassword,
   signOut,
   updateProfile,
 } from "firebase/auth";
@@ -48,7 +49,7 @@ export const useAuthentication = () => {
 
       let systemErrorMessage;
 
-      if (error.message.includes("password")) {
+      if (error.message.includes("Password")) {
         systemErrorMessage = "A senha precisa conter pelo menos 6 caracteres.";
       } else if (error.message.includes("email-already")) {
         systemErrorMessage = "E-mail já cadastrado.";
@@ -56,6 +57,7 @@ export const useAuthentication = () => {
         systemErrorMessage = "Ocorreu um erro, por favor, tente mais tarde.";
       }
 
+      setError(systemErrorMessage);
       setLoading(false);
     }
   };
@@ -65,6 +67,33 @@ export const useAuthentication = () => {
     checkIfIsCancelled();
 
     signOut(auth);
+  };
+
+  // Login - Sign in
+  const login = async (data) => {
+    checkIfIsCancelled();
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      setLoading(false);
+    } catch (error) {
+      let systemErrorMessage;
+
+      if (error.message.includes("user-not-found")) {
+        systemErrorMessage = "Usuário não encontrado";
+      } else if (error.message.includes("wrong-password")) {
+        systemErrorMessage = "Senha incorreta";
+      } else {
+        console.log("qualquer erro", error);
+        systemErrorMessage = "Ocorreu um erro, por favor, tente mais tarde.";
+      }
+
+      setError(systemErrorMessage);
+      setLoading(false);
+    }
   };
 
   // para colocar o cancelado com true assim que sair da página
@@ -78,5 +107,6 @@ export const useAuthentication = () => {
     error,
     loading,
     logout,
+    login,
   };
 };
