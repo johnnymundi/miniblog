@@ -44,9 +44,6 @@ export const useAuthentication = () => {
 
       return user;
     } catch (error) {
-      console.log(error.message);
-      console.log(typeof error.message);
-
       let systemErrorMessage;
 
       if (error.message.includes("Password")) {
@@ -87,7 +84,6 @@ export const useAuthentication = () => {
       } else if (error.message.includes("wrong-password")) {
         systemErrorMessage = "Senha incorreta";
       } else {
-        console.log("qualquer erro", error);
         systemErrorMessage = "Ocorreu um erro, por favor, tente mais tarde.";
       }
 
